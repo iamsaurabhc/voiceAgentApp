@@ -26,10 +26,11 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+        <meta name="grammarly-disable-editor" content="true" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased no-grammarly`}
-        data-gr-ext-installed="false"
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         {children}
       </body>

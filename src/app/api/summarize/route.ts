@@ -17,7 +17,7 @@ export async function POST(request: Request) {
       },
       {
         role: "user",
-        content: messages.map(m => `${m.sender}: ${m.text}`).join('\n')
+        content: messages.map((m: { sender: string; text: string }) => `${m.sender}: ${m.text}`).join('\n')
       }
     ]
   });

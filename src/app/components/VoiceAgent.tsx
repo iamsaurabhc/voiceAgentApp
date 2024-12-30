@@ -1,9 +1,10 @@
 "use client";
 
 import { useConversation } from '@11labs/react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { TopicCard } from './TopicCard';
 import { v4 as uuidv4 } from 'uuid';
+import { LanguageSelector } from './LanguageSelector';
 
 type Message = {
   text: string;
@@ -16,6 +17,12 @@ type Topic = {
   summary: string;
   messages: Message[];
   isExpanded: boolean;
+};
+
+type LanguageOption = {
+  id: string;
+  label: string;
+  agentId: string;
 };
 
 async function summarizeConversation(messages: Message[]): Promise<string> {
@@ -32,6 +39,8 @@ async function summarizeConversation(messages: Message[]): Promise<string> {
 export default function VoiceAgent() {
   const [isListening, setIsListening] = useState(false);
   const [topics, setTopics] = useState<Topic[]>([]);
+  const [selectedLanguage, setSelectedLanguage] = useState<LanguageOption | null>(null);
+  const [agentId, setAgentId] = useState<string | null>(null);
 
   const conversation = useConversation({
     onConnect: () => {
@@ -40,7 +49,6 @@ export default function VoiceAgent() {
     onMessage: async (message) => {
       console.log('Received message:', message);
       setTopics(prevTopics => {
-        console.log('Previous topics:', prevTopics);
         const newTopics = [...prevTopics];
         if (newTopics.length === 0) {
           newTopics.push({
@@ -76,12 +84,19 @@ export default function VoiceAgent() {
     }
   });
 
+  const handleLanguageSelect = (option: LanguageOption) => {
+    setSelectedLanguage(option);
+    setAgentId(option.agentId);
+  };
+
   const handleVoiceClick = useCallback(async () => {
+    if (!agentId) return;
+
     try {
       if (!isListening) {
         await navigator.mediaDevices.getUserMedia({ audio: true });
         await conversation.startSession({
-          agentId: '3K6vpejpeNrrPZjbiavL' // Replace with your actual agent ID
+          agentId: agentId
         });
         setIsListening(true);
       } else {
@@ -91,7 +106,11 @@ export default function VoiceAgent() {
     } catch (error) {
       console.error('Error accessing microphone:', error);
     }
-  }, [isListening, conversation]);
+  }, [isListening, conversation, agentId]);
+
+  if (!selectedLanguage) {
+    return <LanguageSelector onSelect={handleLanguageSelect} />;
+  }
 
   return (
     <div className="flex flex-col h-[100dvh] max-w-md mx-auto bg-white dark:bg-gray-900">
