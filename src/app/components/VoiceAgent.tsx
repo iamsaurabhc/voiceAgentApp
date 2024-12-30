@@ -1,7 +1,7 @@
 "use client";
 
 import { useConversation } from '@11labs/react';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { TopicCard } from './TopicCard';
 import { v4 as uuidv4 } from 'uuid';
 import { LanguageSelector } from './LanguageSelector';
